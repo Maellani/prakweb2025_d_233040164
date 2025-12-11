@@ -1,4 +1,5 @@
 <x-layout>
+    {{-- cara memanggil slot $title yang telah dibuat --}}
     <x-slot:title>About</x-slot:title>
-    <h1>INI ABOUT</h1>
+    <h1>Halaman About</h1>
 </x-layout>

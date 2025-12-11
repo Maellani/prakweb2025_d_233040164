@@ -2,44 +2,45 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory; 
+use Illuminate\Notifications\Notifiable;              
+use Illuminate\Database\Eloquent\Relations\HasMany;  
+use Illuminate\Foundation\Auth\User as Authenticatable; 
 
-class User extends Authenticatable
+
+class User extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    // Kolom yang boleh diisi secara mass assignment
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'name',         // Nama lengkap user
+        'username',     // Username unik untuk login
+        'email',        // Email unik untuk login
+        'password',     // Password yang akan di-hash otomatis
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
+    // Kolom yang disembunyikan saat serialisasi (response JSON/Array)
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password',        // Jangan tampilkan password di response
+        'remember_token',  // Jangan tampilkan token di response
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    // Tipe data casting untuk kolom tertentu
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime', // Cast ke object DateTime
+            'password' => 'hashed',             // Otomatis hash password saat
+        ];                                      // insert/update
+    }
+
+    // Relasi: Satu user memiliki banyak posts (One-to-Many)
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class, 'user_id');
+        // 'user_id' adalah foreign key di tabel posts yang menunjuk ke
+        // users.id
+    }
 }
